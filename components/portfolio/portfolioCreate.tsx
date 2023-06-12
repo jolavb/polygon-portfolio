@@ -3,21 +3,22 @@ import { IPortfolio } from "@/contexts/portfoliosContext";
 import { useState } from "react";
 
 interface PortfolioCreateComponentProps {
-  createPortfolio: (p: IPortfolio) => void;
+  handleCreatePortfolio: (p: IPortfolio) => void;
 }
 
 export const PortfolioCreateComponent: React.FC<
   PortfolioCreateComponentProps
-> = ({ createPortfolio }) => {
+> = ({ handleCreatePortfolio }) => {
   const [portfolioName, setPortfolioName] = useState<string>("");
+
   const updatePortfolioName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPortfolioName(event.target.value);
   };
 
-  const handleCreatePortfolio = () => {
+  const valdateAndCreatePortfolio = () => {
     if (portfolioName !== "") {
-      createPortfolio({
-        id: Date.now().toLocaleString(),
+      handleCreatePortfolio({
+        id: Math.random().toString(),
         name: portfolioName,
         tickers: [],
       });
@@ -26,20 +27,14 @@ export const PortfolioCreateComponent: React.FC<
   };
 
   return (
-    <Grid
-      sx={{
-        width: "100%",
-        height: "50px",
-        border: "1px dashed grey",
-      }}
-    >
+    <>
       <TextField
         value={portfolioName}
         onChange={updatePortfolioName}
         id="outlined-basic"
         variant="outlined"
       />
-      <Button onClick={handleCreatePortfolio}>Create Porfolio</Button>
-    </Grid>
+      <Button onClick={valdateAndCreatePortfolio}>Create Porfolio</Button>
+    </>
   );
 };

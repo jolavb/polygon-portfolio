@@ -9,19 +9,15 @@ import {
   ListItemText,
 } from "@mui/material";
 
-import { useRouter } from "next/router";
-
-import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import WorkIcon from "@mui/icons-material/Work";
+import { usePortfolios } from "@/contexts/portfoliosContext";
+import Link from "next/link";
+import { PortfolioCreateComponent } from "./portfolio/portfolioCreate";
 
 const DRAWER_WIDTH = 240;
 
 export const NavigationDrawer: React.FC = () => {
-  const router = useRouter();
-
-  const navigate = (route: string) => {
-    router.push(route);
-  };
+  const { portfolios, createPortfolio } = usePortfolios();
 
   return (
     <Drawer
@@ -39,22 +35,30 @@ export const NavigationDrawer: React.FC = () => {
       <Toolbar />
       <Divider />
       <List>
-        <ListItem key={"discover"} disablePadding>
-          <ListItemButton onClick={() => navigate("/")}>
-            <ListItemIcon>
-              <QueryStatsIcon />
-            </ListItemIcon>
-            <ListItemText primary={"Discover"} />
-          </ListItemButton>
-        </ListItem>
         <ListItem key={"portfolios"} disablePadding>
-          <ListItemButton onClick={() => navigate("/portfolios")}>
+          <ListItemButton>
             <ListItemIcon>
               <WorkIcon />
             </ListItemIcon>
             <ListItemText primary={"Portfolios"} />
           </ListItemButton>
         </ListItem>
+        <PortfolioCreateComponent handleCreatePortfolio={createPortfolio} />
+
+        {portfolios.map((p) => {
+          return (
+            <ListItem key={p.id} disablePadding>
+              <Link href={`/portfolios/${p.id}`} key={p.id}>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <WorkIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={p.name} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          );
+        })}
       </List>
     </Drawer>
   );

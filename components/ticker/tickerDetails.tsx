@@ -1,6 +1,5 @@
-import { Typography, IconButton } from "@mui/material";
+import { Typography, IconButton, Box } from "@mui/material";
 import { ITicker } from "@/contexts/portfoliosContext";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,10 +25,9 @@ ChartJS.register(
 
 interface ITickerProps {
   ticker: ITicker;
-  handleReturn: () => void;
 }
 
-export function TickerDetails({ ticker, handleReturn }: ITickerProps) {
+export function TickerDetails({ ticker }: ITickerProps) {
   const dataSets = {
     labels: ticker.aggregates?.map((t) =>
       moment(t.timestamp).format("MM-DD-YY")
@@ -58,12 +56,12 @@ export function TickerDetails({ ticker, handleReturn }: ITickerProps) {
   };
 
   return (
-    <>
-      <Typography>{ticker.name}</Typography>
+    <Box
+      sx={{
+        width: "100pc",
+      }}
+    >
       <Line data={dataSets} options={options} />
-      <IconButton onClick={handleReturn}>
-        <ArrowBackIcon />
-      </IconButton>
-    </>
+    </Box>
   );
 }

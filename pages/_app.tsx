@@ -5,6 +5,7 @@ import { theme } from "../utils/theme";
 import createEmotionCache from "../utils/createEmotionCache";
 import { CacheProvider } from "@emotion/react";
 import { PortfoliosProvider } from "@/contexts/portfoliosContext";
+import { Layout } from "@/components/layout";
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -17,7 +18,9 @@ export default function App({
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
         <PortfoliosProvider>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </PortfoliosProvider>
       </ThemeProvider>
     </CacheProvider>

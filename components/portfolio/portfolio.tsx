@@ -5,9 +5,14 @@ import {
   AccordionDetails,
   IconButton,
   Stack,
+  Card,
+  Paper,
+  CardContent,
+  CardActions,
+  Button,
 } from "@mui/material";
 
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/DeleteForever";
 
 import { IPortfolio, ITicker } from "@/contexts/portfoliosContext";
@@ -18,16 +23,14 @@ import { TickerDetails } from "../ticker/tickerDetails";
 
 interface PortfolioComponentProps {
   portfolio: IPortfolio;
-  deletePortfolio: (pid: string) => void;
+  handleDeletePortfolio: (pid: string) => void;
   handleAddTickerToPortfolio: (pid: string, ticker: ITicker) => void;
   handleRemoveTickerFromPortfolio: (pid: string, ticker: ITicker) => void; // Could be utility fx
-  tickers: ITicker[];
 }
 
 export default function PortfolioComponent({
   portfolio,
-  tickers,
-  deletePortfolio,
+  handleDeletePortfolio,
   handleAddTickerToPortfolio,
   handleRemoveTickerFromPortfolio,
 }: PortfolioComponentProps): React.ReactNode {
@@ -35,8 +38,9 @@ export default function PortfolioComponent({
 
   const tickerExistsInPortfolio = (t: ITicker) => {
     return (
-      tickers.find((existingTicker) => existingTicker.ticker == t.ticker) !==
-      undefined
+      portfolio.tickers.find(
+        (existingTicker) => existingTicker.ticker == t.ticker
+      ) !== undefined
     );
   };
 
@@ -55,42 +59,46 @@ export default function PortfolioComponent({
   };
 
   return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-      >
-        <Typography>{portfolio.name}</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        {selectedTicker ? (
-          <TickerDetails
-            handleReturn={() => handleUpdateSelectedTicker(null)}
-            ticker={selectedTicker}
-          />
-        ) : (
+    <Card variant="outlined">
+      <CardContent></CardContent>
+      {selectedTicker ? (
+        <CardContent>
+          <Stack spacing={1} direction="row">
+            <IconButton
+              disableRipple
+              onClick={() => handleUpdateSelectedTicker(null)}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <TickerDetails ticker={selectedTicker} />
+          </Stack>
+        </CardContent>
+      ) : (
+        <CardContent>
           <Stack spacing={2}>
             <TickerSearch
               inputTextLabel="Select Tickers"
               onSelectTicker={onAddTicker}
             />
-
             <TickerTable
               handleTickerSelect={(t) => handleUpdateSelectedTicker(t)}
               onDeleteTicker={onDeleteTicker}
-              tickers={tickers}
+              tickers={portfolio.tickers}
             />
           </Stack>
-        )}
-
-        <IconButton
-          onClick={() => deletePortfolio(portfolio.id)}
-          aria-label="delete"
-        >
-          <DeleteIcon />
-        </IconButton>
-      </AccordionDetails>
-    </Accordion>
+          <CardActions sx={{ float: "right", padding: "20px" }}>
+            <Button
+              color="error"
+              onClick={() => handleDeletePortfolio(portfolio.id)}
+              variant="outlined"
+              disableElevation
+            >
+              Delete Portfolio
+              <DeleteIcon />
+            </Button>
+          </CardActions>
+        </CardContent>
+      )}
+    </Card>
   );
 }

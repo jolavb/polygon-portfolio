@@ -1,5 +1,6 @@
 import { timeStamp } from "console";
 import React, { createContext, useState, useContext } from "react";
+import { getTickerAggregates, getTickerSnapshots } from "@/utils/polygonClient";
 
 export const emptyTickerSnapshot = (): ITickerSnapshot => {
   return {
@@ -44,7 +45,10 @@ export interface IPortfolio {
 
 interface PortfoliosContextData {
   portfolios: IPortfolio[];
-  setPorfolio: React.Dispatch<React.SetStateAction<IPortfolio[]>>;
+  createPortfolio: (newPortFolio: IPortfolio) => void;
+  deletePortfolio: (portfolioID: string) => void;
+  addTickerToPortfolio: (portfolioId: string, ticker: ITicker) => void;
+  removeTickerFromPortfolio: (portfolioId: string, ticker: ITicker) => void;
 }
 
 const PortfoliosContext = createContext<PortfoliosContextData | undefined>(
@@ -60,8 +64,73 @@ export const PortfoliosProvider: React.FC<PortfolioProviderProps> = ({
 }) => {
   const [portfolios, setPorfolio] = useState<IPortfolio[]>([]);
 
+  const createPortfolio = (newPortFolio: IPortfolio) => {
+    setPorfolio([
+      ...portfolios,
+      {
+        id: newPortFolio.id,
+        name: newPortFolio.name,
+        tickers: [],
+      },
+    ]);
+  };
+
+  const addTickerToPortfolio = async (portfolioId: string, ticker: ITicker) => {
+    let portfolioToUpdate = portfolios.find((p) => p.id == portfolioId);
+    // we could inject data here w/ the tickers price etc.
+
+    if (portfolioToUpdate) {
+      let snapShopResults = await getTickerSnapshots([ticker.ticker]);
+      let tickerAggregates = await getTickerAggregates(ticker.ticker);
+
+      ticker.snapShot = snapShopResults[0];
+      ticker.aggregates = tickerAggregates;
+
+      setPorfolio([
+        ...portfolios.filter((p) => p.id !== portfolioId),
+        {
+          ...portfolioToUpdate,
+          tickers: [...portfolioToUpdate.tickers, ticker],
+        },
+      ]);
+    }
+  };
+
+  const removeTickerFromPortfolio = (portfolioId: string, ticker: ITicker) => {
+    let portfolioToUpdate = portfolios.find((p) => p.id == portfolioId);
+
+    if (portfolioToUpdate) {
+      if (portfolioToUpdate) {
+        setPorfolio([
+          ...portfolios.filter((p) => p.id !== portfolioId),
+          {
+            ...portfolioToUpdate,
+            tickers: portfolioToUpdate.tickers.filter(
+              (et) => et.ticker !== ticker.ticker
+            ),
+          },
+        ]);
+      }
+    }
+  };
+
+  const deletePortfolio = (portfolioId: string) => {
+    let portfolioToUpdate = portfolios.find((p) => p.id == portfolioId);
+    if (portfolioToUpdate) {
+      setPorfolio([...portfolios.filter((p) => p.id !== portfolioId)]);
+    }
+  };
+
   return (
-    <PortfoliosContext.Provider value={{ portfolios, setPorfolio }}>
+    <PortfoliosContext.Provider
+      value={{
+        portfolios,
+        createPortfolio,
+        addTickerToPortfolio,
+        removeTickerFromPortfolio,
+        deletePortfolio,
+      }}
+    >
       {children}
     </PortfoliosContext.Provider>
   );
