@@ -4,14 +4,20 @@ This is a demo nextjs app, used to interact with [the polygon api](https://polyg
 
 ## Requirements
 
-- node
-- npm package manager
+- Node.js 16.8 or Later
 
 ## Getting Started
 
 1. Add your Polygon API Key to `.env.local`
+2. Install Dependencies
+```bash
+yarn install
 
-2. Run Locally with
+# or
+
+npm install
+```
+3. Run Locally with
 
 ```bash
 yarn dev
