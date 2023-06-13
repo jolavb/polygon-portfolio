@@ -1,11 +1,11 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "@mui/material";
-import { theme } from "../utils/theme";
-import createEmotionCache from "../utils/createEmotionCache";
+import { theme } from "../styles/theme";
+import createEmotionCache from "../styles/createEmotionCache";
 import { CacheProvider } from "@emotion/react";
 import { PortfoliosProvider } from "@/contexts/portfoliosContext";
-import { Layout } from "@/components/layout";
+import Layout from "@/components/layout/layout";
 
 const clientSideEmotionCache = createEmotionCache();
 

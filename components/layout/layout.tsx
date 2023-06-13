@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import { AppBarComponent } from "./appBar";
-import { NavigationDrawer } from "./navigationDrawer";
+import NavigationDrawer from "./navigationDrawer";
 import { Container } from "@mui/system";
 import { APP_BAR_HEIGHT } from "./appBar";
 
@@ -12,7 +12,7 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children }): React.ReactNode => {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -28,3 +28,5 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     </Box>
   );
 };
+
+export default Layout;

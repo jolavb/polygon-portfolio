@@ -6,9 +6,12 @@ import {
   TableRow,
   TableCell,
   Paper,
+  Card,
+  Typography,
 } from "@mui/material";
 import { ITicker } from "@/contexts/portfoliosContext";
-import { TickerRow } from "./tickerRow";
+import TickerRow from "./tickerRow";
+import { useTheme } from "@mui/material/styles";
 
 interface ITickerTableProps {
   tickers: ITicker[];
@@ -16,36 +19,55 @@ interface ITickerTableProps {
   handleTickerSelect: (selectedTicker: ITicker) => void;
 }
 
-export default function TickerTable({
+const TickerTable: React.FC<ITickerTableProps> = ({
   tickers,
   onDeleteTicker,
   handleTickerSelect,
-}: ITickerTableProps) {
+}): React.ReactNode => {
+  const theme = useTheme();
   return (
     <TableContainer component={Paper}>
-      <Table aria-label="ticker table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Ticker</TableCell>
-            <TableCell>Company</TableCell>
-            <TableCell>Latest Price</TableCell>
-            <TableCell>Prev. Day Close</TableCell>
-            <TableCell>Change (%)</TableCell>
-            <TableCell>Change ($)</TableCell>
-            {onDeleteTicker ? <TableCell></TableCell> : null}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {tickers.map((ticker) => (
-            <TickerRow
-              key={ticker.ticker}
-              ticker={ticker}
-              handleTickerSelect={handleTickerSelect}
-              onDeleteTicker={onDeleteTicker}
-            />
-          ))}
-        </TableBody>
-      </Table>
+      {tickers.length > 0 ? (
+        <Table aria-label="ticker table">
+          <TableHead
+            className={"TickerTableHeader"}
+            sx={{ backgroundColor: theme.palette.secondary.light }}
+          >
+            <TableRow>
+              <TableCell>Ticker</TableCell>
+              <TableCell>Company</TableCell>
+              <TableCell>Latest Price</TableCell>
+              <TableCell>Prev. Day Close</TableCell>
+              <TableCell>Change (%)</TableCell>
+              <TableCell>Change ($)</TableCell>
+              {onDeleteTicker ? <TableCell></TableCell> : null}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tickers.map((ticker) => (
+              <TickerRow
+                key={ticker.ticker}
+                ticker={ticker}
+                handleTickerSelect={handleTickerSelect}
+                onDeleteTicker={onDeleteTicker}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <Card
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Typography variant={"overline"}>
+            To Get Started, Search and Select Tickers Above{" "}
+          </Typography>
+        </Card>
+      )}
     </TableContainer>
   );
-}
+};
+
+export default TickerTable;

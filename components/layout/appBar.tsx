@@ -1,8 +1,9 @@
 import { Toolbar, AppBar, Typography } from "@mui/material";
-const DRAWER_WIDTH = 240;
+import { DRAWER_WIDTH } from "./navigationDrawer";
+
 const APP_BAR_HEIGHT = 64;
 
-const AppBarComponent = () => {
+const AppBarComponent: React.FC = (): React.ReactNode => {
   return (
     <AppBar
       position="fixed"

@@ -2,18 +2,18 @@ import { Autocomplete, TextField } from "@mui/material";
 
 import { ITicker } from "@/contexts/portfoliosContext";
 
-import polygonClient from "@/utils/polygonClient";
+import polygonClient from "@/clients/polygonClient";
 import { useState } from "react";
 
 interface ITickerSearchProps {
-  onSelectTicker?: (selected: ITicker) => void;
+  onSelectTicker: (selected: ITicker) => void;
   inputTextLabel: string;
 }
 
-export default function TickerSearch({
+const TickerSearch: React.FC<ITickerSearchProps> = ({
   onSelectTicker,
   inputTextLabel,
-}: ITickerSearchProps) {
+}) => {
   const [tickerOptions, setTickerOptions] = useState<ITicker[]>([]);
 
   const handleTickerSearch = (searchTerm: string) => {
@@ -41,10 +41,10 @@ export default function TickerSearch({
     <Autocomplete
       id="search-stocks"
       disableClearable
-      onChange={(e, v) => (onSelectTicker ? onSelectTicker(v.value) : null)}
+      onChange={(_, v) => onSelectTicker(v.value)}
       options={tickerOptions.map((option) => {
         return {
-          label: `${option.ticker} - ${option.name}`,
+          label: `${option.ticker}-${option.name}`,
           value: option,
         };
       })}
@@ -61,4 +61,6 @@ export default function TickerSearch({
       )}
     />
   );
-}
+};
+
+export default TickerSearch;

@@ -1,8 +1,10 @@
-import { timeStamp } from "console";
 import React, { createContext, useState, useContext } from "react";
-import { getTickerAggregates, getTickerSnapshots } from "@/utils/polygonClient";
+import {
+  getTickerAggregates,
+  getTickerSnapshots,
+} from "@/clients/polygonClient";
 
-export const emptyTickerSnapshot = (): ITickerSnapshot => {
+const emptyTickerSnapshot = (): ITickerSnapshot => {
   return {
     latestMinClosePrice: 0,
     prevDayClosePrice: 0,
@@ -11,7 +13,7 @@ export const emptyTickerSnapshot = (): ITickerSnapshot => {
   };
 };
 
-export const emptyAggregate = (): ITickerAggregate => {
+const emptyAggregate = (): ITickerAggregate => {
   return {
     timestamp: 0,
     price: 0,
@@ -43,8 +45,12 @@ export interface IPortfolio {
   tickers: ITicker[];
 }
 
+interface IPortfolios {
+  [id: string]: IPortfolio;
+}
+
 interface PortfoliosContextData {
-  portfolios: IPortfolio[];
+  portfolios: IPortfolios;
   createPortfolio: (newPortFolio: IPortfolio) => void;
   deletePortfolio: (portfolioID: string) => void;
   addTickerToPortfolio: (portfolioId: string, ticker: ITicker) => void;
@@ -59,24 +65,22 @@ interface PortfolioProviderProps {
   children: React.ReactNode;
 }
 
-export const PortfoliosProvider: React.FC<PortfolioProviderProps> = ({
-  children,
-}) => {
-  const [portfolios, setPorfolio] = useState<IPortfolio[]>([]);
+const PortfoliosProvider: React.FC<PortfolioProviderProps> = ({ children }) => {
+  const [portfolios, setPortfolios] = useState<IPortfolios>({});
 
   const createPortfolio = (newPortFolio: IPortfolio) => {
-    setPorfolio([
+    setPortfolios({
       ...portfolios,
-      {
-        id: newPortFolio.id,
+      [newPortFolio.id]: {
         name: newPortFolio.name,
+        id: newPortFolio.id,
         tickers: [],
       },
-    ]);
+    });
   };
 
   const addTickerToPortfolio = async (portfolioId: string, ticker: ITicker) => {
-    let portfolioToUpdate = portfolios.find((p) => p.id == portfolioId);
+    let portfolioToUpdate = portfolios[portfolioId];
     // we could inject data here w/ the tickers price etc.
 
     if (portfolioToUpdate) {
@@ -86,39 +90,33 @@ export const PortfoliosProvider: React.FC<PortfolioProviderProps> = ({
       ticker.snapShot = snapShopResults[0];
       ticker.aggregates = tickerAggregates;
 
-      setPorfolio([
-        ...portfolios.filter((p) => p.id !== portfolioId),
-        {
+      setPortfolios({
+        ...portfolios,
+        [portfolioToUpdate.id]: {
           ...portfolioToUpdate,
           tickers: [...portfolioToUpdate.tickers, ticker],
         },
-      ]);
+      });
     }
   };
 
   const removeTickerFromPortfolio = (portfolioId: string, ticker: ITicker) => {
-    let portfolioToUpdate = portfolios.find((p) => p.id == portfolioId);
-
-    if (portfolioToUpdate) {
-      if (portfolioToUpdate) {
-        setPorfolio([
-          ...portfolios.filter((p) => p.id !== portfolioId),
-          {
-            ...portfolioToUpdate,
-            tickers: portfolioToUpdate.tickers.filter(
-              (et) => et.ticker !== ticker.ticker
-            ),
-          },
-        ]);
-      }
-    }
+    let portfolioToUpdate = portfolios[portfolioId];
+    setPortfolios({
+      ...portfolios,
+      [portfolioId]: {
+        ...portfolioToUpdate,
+        tickers: portfolioToUpdate.tickers.filter(
+          (existingTicker) => existingTicker.ticker !== ticker.ticker
+        ),
+      },
+    });
   };
 
   const deletePortfolio = (portfolioId: string) => {
-    let portfolioToUpdate = portfolios.find((p) => p.id == portfolioId);
-    if (portfolioToUpdate) {
-      setPorfolio([...portfolios.filter((p) => p.id !== portfolioId)]);
-    }
+    let portfoliosCopy = { ...portfolios };
+    delete portfoliosCopy[portfolioId];
+    setPortfolios(portfoliosCopy);
   };
 
   return (
@@ -136,10 +134,13 @@ export const PortfoliosProvider: React.FC<PortfolioProviderProps> = ({
   );
 };
 
-export const usePortfolios = (): PortfoliosContextData => {
+const usePortfolios = (): PortfoliosContextData => {
   const context = useContext(PortfoliosContext);
   if (context === undefined) {
     throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 };
+
+export default usePortfolios;
+export { PortfoliosProvider, emptyAggregate, emptyTickerSnapshot };

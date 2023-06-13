@@ -1,4 +1,4 @@
-import { Typography, IconButton, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { ITicker } from "@/contexts/portfoliosContext";
 import {
   Chart as ChartJS,
@@ -27,7 +27,7 @@ interface ITickerProps {
   ticker: ITicker;
 }
 
-export function TickerDetails({ ticker }: ITickerProps) {
+const TickerDetails: React.FC<ITickerProps> = ({ ticker }): React.ReactNode => {
   const dataSets = {
     labels: ticker.aggregates?.map((t) =>
       moment(t.timestamp).format("MM-DD-YY")
@@ -56,12 +56,10 @@ export function TickerDetails({ ticker }: ITickerProps) {
   };
 
   return (
-    <Box
-      sx={{
-        width: "100pc",
-      }}
-    >
+    <Box sx={{ width: "100pc" }}>
       <Line data={dataSets} options={options} />
     </Box>
   );
-}
+};
+
+export default TickerDetails;

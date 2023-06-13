@@ -1,25 +1,19 @@
 import {
-  Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   IconButton,
   Stack,
   Card,
-  Paper,
   CardContent,
   CardActions,
   Button,
 } from "@mui/material";
-
+import React, { useState } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/DeleteForever";
 
 import { IPortfolio, ITicker } from "@/contexts/portfoliosContext";
+import TickerDetails from "../ticker/tickerDetails";
 import TickerSearch from "../ticker/tickerSearch";
 import TickerTable from "../ticker/tickerTable";
-import { useState } from "react";
-import { TickerDetails } from "../ticker/tickerDetails";
 
 interface PortfolioComponentProps {
   portfolio: IPortfolio;
@@ -28,12 +22,12 @@ interface PortfolioComponentProps {
   handleRemoveTickerFromPortfolio: (pid: string, ticker: ITicker) => void; // Could be utility fx
 }
 
-export default function PortfolioComponent({
+const PortfolioComponent: React.FC<PortfolioComponentProps> = ({
   portfolio,
   handleDeletePortfolio,
   handleAddTickerToPortfolio,
   handleRemoveTickerFromPortfolio,
-}: PortfolioComponentProps): React.ReactNode {
+}): React.ReactNode => {
   const [selectedTicker, setSelectedTicker] = useState<ITicker | null>(null);
 
   const tickerExistsInPortfolio = (t: ITicker) => {
@@ -60,10 +54,9 @@ export default function PortfolioComponent({
 
   return (
     <Card variant="outlined">
-      <CardContent></CardContent>
       {selectedTicker ? (
         <CardContent>
-          <Stack spacing={1} direction="row">
+          <Stack spacing={2} direction="row">
             <IconButton
               disableRipple
               onClick={() => handleUpdateSelectedTicker(null)}
@@ -101,4 +94,6 @@ export default function PortfolioComponent({
       )}
     </Card>
   );
-}
+};
+
+export default PortfolioComponent;
